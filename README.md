@@ -1,2 +1,2 @@
-# mui-audio-player
-Material UI Audio Player
+# Material UI Audio Player
+Audio Player component for Material UI
