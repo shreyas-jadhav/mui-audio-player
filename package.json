@@ -4,7 +4,9 @@
   "description": "Audio Player component for Material UI",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "tsc watch",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
