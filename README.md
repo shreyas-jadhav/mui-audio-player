@@ -2,7 +2,7 @@
 
 Audio Player component for Material UI
 
-# While Library Development
+## While developing package
 
 ```
 # watch the typescript output
