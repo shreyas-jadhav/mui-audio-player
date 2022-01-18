@@ -1,0 +1,29 @@
+{
+  "name": "mui-audio-player",
+  "version": "1.0.0",
+  "description": "Audio Player component for Material UI",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shreyas-jadhav/mui-audio-player.git"
+  },
+  "keywords": [
+    "audio",
+    "player",
+    "material",
+    "ui",
+    "mui"
+  ],
+  "author": "Shreyas Jadhav",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shreyas-jadhav/mui-audio-player/issues"
+  },
+  "homepage": "https://github.com/shreyas-jadhav/mui-audio-player#readme",
+  "dependencies": {
+    "@types/react": "^17.0.38"
+  }
+}
