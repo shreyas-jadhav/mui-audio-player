@@ -8,10 +8,13 @@ Audio Player component for Material UI
 # watch the typescript output
 npm run watch
 
-# cd example react app
+# example react app
 cd example
 
-# link the package folder
+# install deps
+npm i
+
+# link the package folder if any other app than example
 npm link ../
 
 # run the example
