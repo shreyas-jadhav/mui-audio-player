@@ -180,13 +180,15 @@ const MuiAudioPlayer = ({
       alignItems="center"
     >
       {loading && (
-        <LinearProgress
-          variant="determinate"
-          style={{ flexGrow: 1 }}
-          value={progress}
-        />
+        <Box width="100%" flexGrow={1}>
+          <LinearProgress
+            variant="determinate"
+            style={{ flexGrow: 1 }}
+            value={progress}
+          />
+        </Box>
       )}
-      {inline && (
+      {inline && !loading && (
         <Box p={1}>
           <PlayPauseButton />
         </Box>
@@ -195,13 +197,13 @@ const MuiAudioPlayer = ({
       <Stack
         component={Box}
         direction="row"
-        flexGrow={1}
+        flexGrow={loading ? 0 : 1}
         height={"100%"}
         width="100%"
         alignItems="center"
         spacing={1}
       >
-        {showTimestamps && (
+        {showTimestamps && !loading && (
           <Box pl={1}>
             <small
               style={{
@@ -243,7 +245,7 @@ const MuiAudioPlayer = ({
           )}
         </Box>
 
-        {showTimestamps && (
+        {showTimestamps && !loading && (
           <Box pr={1}>
             <small
               style={{
