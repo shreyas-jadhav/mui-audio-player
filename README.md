@@ -6,6 +6,8 @@ Material UI, Wavesurfer based Audio Player
 npm i mui-audio-player-plus
 ```
 
+# Demo and Usage
+Visit: https://mui-audio-player.vercel.app/
 
 
 ## While developing package
