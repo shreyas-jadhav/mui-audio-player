@@ -1,4 +1,8 @@
-# Material UI Audio Player (WIP)
+# Material UI Audio Player 
+
+```
+npm i mui-audio-player-plus
+```
 
 Audio Player component for Material UI
 
