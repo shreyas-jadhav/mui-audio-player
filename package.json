@@ -33,6 +33,6 @@
     "@mui/material": "^5.3.0",
     "@types/react": "^17.0.38",
     "@types/wavesurfer.js": "^5.2.2",
-    "wavesurfer-react": "file:../wavesurfer-react"
+    "wavesurfer-react": "https://github.com/shreyas-jadhav/wavesurfer-react/raw/tarball/wavesurfer-react-2.0.13.tgz"
   }
 }
