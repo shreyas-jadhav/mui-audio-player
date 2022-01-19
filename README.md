@@ -1,6 +1,14 @@
-# Material UI Audio Player (WIP)
+# Material UI Audio Player 
 
-Audio Player component for Material UI
+Material UI, Wavesurfer based Audio Player
+
+```
+npm i mui-audio-player-plus
+```
+
+# Demo and Usage
+Visit: https://mui-audio-player.vercel.app/
+
 
 ## While developing package
 
