@@ -1,5 +1,5 @@
 {
-  "name": "mui-audio-player",
+  "name": "mui-audio-player-plus",
   "version": "1.0.0",
   "description": "Audio Player component for Material UI",
   "main": "dist/index.js",
