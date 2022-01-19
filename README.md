@@ -1,6 +1,6 @@
 # Material UI Audio Player 
 
-Material UI, Wavesurfer based Audio Player
+Material UI + Wavesurfer based Audio Player
 
 ```
 npm i mui-audio-player-plus
