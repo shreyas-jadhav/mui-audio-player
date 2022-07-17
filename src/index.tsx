@@ -69,6 +69,7 @@ const MuiAudioPlayer = ({
   const [position, setPosition] = useState(0);
   const [currentTime, setCurrentTime] = useState("00:00");
   const [endTime, setEndTime] = useState("");
+  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
   const wavesurferRef = React.useRef<WaveSurferRef>();
 
   const handleMount: WaveSurferProps[`onMount`] = React.useCallback(
@@ -108,8 +109,9 @@ const MuiAudioPlayer = ({
     [src]
   );
 
-  const audioElement = useMemo(() => {
-    if (display != "timeline") return null;
+  useEffect(() => {
+    if (display != "timeline") return;
+    audioElement?.pause();
     const audio = new Audio(src);
     audio.addEventListener("playing", () => setPlaying(true));
     ["pause", "ended"].forEach((e) =>
@@ -125,7 +127,7 @@ const MuiAudioPlayer = ({
     });
 
     audio.addEventListener("error", (e) => console.error(e));
-    return audio;
+    setAudioElement(audio);
   }, [src, display]);
 
   const handlePlay = () => {
@@ -164,7 +166,7 @@ const MuiAudioPlayer = ({
           )}
         </IconButton>
       ),
-    [size, playPauseIconButtonProps, playing, loading]
+    [size, playPauseIconButtonProps, playing, loading, handlePlay]
   );
 
   if (!src) return null;
