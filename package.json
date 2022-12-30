@@ -36,6 +36,6 @@
   "dependencies": {
     "@types/react": "^17.0.38",
     "@types/wavesurfer.js": "^5.2.2",
-    "wavesurfer-react": "https://github.com/shreyas-jadhav/wavesurfer-react/raw/tarball/wavesurfer-react-2.0.13.tgz"
+    "wavesurfer-react": "^2.2.2"
   }
 }
