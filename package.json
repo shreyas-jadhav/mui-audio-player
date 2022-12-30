@@ -30,8 +30,8 @@
   },
   "homepage": "https://github.com/shreyas-jadhav/mui-audio-player#readme",
   "peerDependencies": {
-    "@mui/material": ">=5.9.1",
-    "@mui/icons-material": ">=5.3.0"
+    "@mui/icons-material": ">=5.3.0",
+    "@mui/material": ">=5.9.1"
   },
   "dependencies": {
     "@types/react": "^17.0.38",
