@@ -36,6 +36,7 @@
   "dependencies": {
     "@types/react": "^17.0.38",
     "@types/wavesurfer.js": "^5.2.2",
+    "throttle-typescript": "^1.1.0",
     "wavesurfer-react": "^2.2.2"
   }
 }
