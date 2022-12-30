@@ -47,8 +47,8 @@ export default function AudioPlayer(props: AudioPlayerProps) {
     const [progress, setProgress] = useState(0);
     const [playing, setPlaying] = useState(false);
     const [position, setPosition] = useState(0);
-    const [currentTime, setCurrentTime] = useState("00:00");
-    const [endTime, setEndTime] = useState("");
+    const [currentTime, setCurrentTime] = useState(NaN);
+    const [endTime, setEndTime] = useState(NaN);
     const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(
         null
     );
@@ -180,16 +180,29 @@ function changeCurrentTimeForTimeline(
     };
 }
 
-function TimeStamp(props: { time: string; loading?: boolean; show?: boolean }) {
+function toTimeString(time: number) {
+    const date = new Date();
+    date.setHours(0);
+    date.setMinutes(0);
+    date.setSeconds(time);
+    return date.toTimeString().slice(3, 8);
+}
+
+function TimeStamp(props: { time: number; loading?: boolean; show?: boolean }) {
     const {time, loading = false, show = true} = props;
+
+    const defaultTimeStr = "00:00";
+    const invalidTimeStr = "--:--";
 
     if (!show) {
         return null;
     }
 
+    const timeStr = Number.isNaN(time) ? invalidTimeStr : toTimeString(time);
+
     return (
         <MUI.Box sx={containerStyle.timestamp}>
-            <MUI.Typography>{loading ? "--:--" : time}</MUI.Typography>
+            <MUI.Typography>{loading ? defaultTimeStr : timeStr}</MUI.Typography>
         </MUI.Box>
     );
 }
@@ -198,8 +211,8 @@ interface GetInitializeWaveSurferParams {
     src: string;
     waveSurferRef: React.MutableRefObject<WaveSurferRef>;
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-    setCurrentTime: React.Dispatch<React.SetStateAction<string>>;
-    setEndTime: React.Dispatch<React.SetStateAction<string>>;
+    setCurrentTime: React.Dispatch<React.SetStateAction<number>>;
+    setEndTime: React.Dispatch<React.SetStateAction<number>>;
     setProgress: React.Dispatch<React.SetStateAction<number>>;
     setPlaying: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -236,17 +249,17 @@ function getInitializeWaveSurfer(
         });
         waveSurfer.on("ready", () => {
             setLoading(false);
-            setEndTime(secondsToTimestring(waveSurfer.getDuration()));
+            setEndTime(waveSurfer.getDuration());
         });
         waveSurfer.on("play", makePlaying);
         waveSurfer.on(
             "audioprocess",
-            throttle((e: number) => {
-                setCurrentTime(secondsToTimestring(e));
+            throttle((n: number) => {
+                setCurrentTime(n);
             }, 100)
         );
         waveSurfer.on("seek", () => {
-            setCurrentTime(secondsToTimestring(waveSurfer.getCurrentTime()));
+            setCurrentTime(waveSurfer.getCurrentTime());
         });
         ["finish", "destroy", "pause"].forEach((e) =>
             waveSurfer.on(e, makeNotPlaying)
@@ -258,21 +271,13 @@ function getInitializeWaveSurfer(
     };
 }
 
-function secondsToTimestring(seconds: number) {
-    const date = new Date();
-    date.setHours(0);
-    date.setMinutes(0);
-    date.setSeconds(seconds);
-    return date.toTimeString().slice(3, 8);
-}
-
 interface InitializeForTimelineArgs {
     src: string;
     audioElement: HTMLAudioElement | null;
     setAudioElement: React.Dispatch<React.SetStateAction<HTMLAudioElement | null>>;
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-    setCurrentTime: React.Dispatch<React.SetStateAction<string>>;
-    setEndTime: React.Dispatch<React.SetStateAction<string>>;
+    setCurrentTime: React.Dispatch<React.SetStateAction<number>>;
+    setEndTime: React.Dispatch<React.SetStateAction<number>>;
     setPlaying: React.Dispatch<React.SetStateAction<boolean>>;
     setPosition: React.Dispatch<React.SetStateAction<number>>;
 }
@@ -298,13 +303,13 @@ function initializeForTimeline(args: InitializeForTimelineArgs) {
 
     audio.addEventListener("canplaythrough", () => {
         setLoading(false);
-        setEndTime(secondsToTimestring(audio.duration));
+        setEndTime(audio.duration);
     });
     audio.addEventListener("playing", makePlaying);
     audio.addEventListener(
         "timeupdate",
         throttle(() => {
-            setCurrentTime(secondsToTimestring(audio.currentTime));
+            setCurrentTime(audio.currentTime);
             setPosition((audio.currentTime / audio.duration) * 100);
         }, 100)
     );
