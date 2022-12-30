@@ -148,7 +148,6 @@ const AudioPlayer = (props: AudioPlayerProps) => {
                     )}
                 </MUI.Box>
                 <TimeStamp
-                    place="right"
                     time={endTime}
                     loading={loading}
                     show={showTimestamps}
@@ -184,9 +183,8 @@ function TimeStamp(props: {
     time: string;
     loading?: boolean;
     show?: boolean;
-    place?: "left" | "right";
 }) {
-    const {time, loading = false, place = "left", show = true} = props;
+    const {time, loading = false, show = true} = props;
 
     if (!show) {
         return null;
@@ -194,8 +192,6 @@ function TimeStamp(props: {
 
     return (
         <MUI.Box
-            pr={place === "left" ? 1 : 0}
-            pl={place === "right" ? 1 : 0}
             sx={containerStyle.timestamp}
         >
             <MUI.Typography>{loading ? "--:--" : time}</MUI.Typography>
@@ -381,7 +377,7 @@ export default memo(AudioPlayer);
 
 const containerStyle = {
     timestamp: {
-        minWidth: "fit-content",
+        minWidth: "50px",
     },
     playButton: {
         m: 1,
