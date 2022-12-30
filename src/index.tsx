@@ -1,10 +1,12 @@
-import React, {useEffect, useState, useRef, memo} from "react";
+import React, {useEffect, useState, useRef} from "react";
 import {WaveSurfer, WaveForm, useWavesurfer} from "wavesurfer-react";
 import * as MUI from "@mui/material";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import {WaveSurferProps} from "wavesurfer-react/dist/containers/WaveSurfer";
 import {PluginType} from "wavesurfer-react/dist/types";
+import {throttle} from "throttle-typescript";
+import {SliderUnstyledTypeMap} from "@mui/base/SliderUnstyled/SliderUnstyled.types";
 
 const plugins: PluginType[] = [];
 
@@ -25,7 +27,7 @@ interface AudioPlayerProps {
     containerWidth?: string | number;
 }
 
-const AudioPlayer = (props: AudioPlayerProps) => {
+export default function AudioPlayer(props: AudioPlayerProps) {
     const {
         src,
         id = "waveform",
@@ -90,7 +92,6 @@ const AudioPlayer = (props: AudioPlayerProps) => {
                     display={display}
                     audioElement={audioElement}
                     playing={playing}
-                    setPlaying={setPlaying}
                     waveSurferRef={waveSurferRef}
                     playPauseIconButtonProps={playPauseIconButtonProps}
                 />
@@ -112,7 +113,7 @@ const AudioPlayer = (props: AudioPlayerProps) => {
                 <MUI.Box flexGrow={1} height="100%" width="100%" alignItems="center">
                     {display === "waveform" && (
                         <WaveSurfer
-                            onMount={handleMount({
+                            onMount={getInitializeWaveSurfer({
                                 src,
                                 waveSurferRef,
                                 setLoading,
@@ -137,21 +138,14 @@ const AudioPlayer = (props: AudioPlayerProps) => {
                     {display === "timeline" && !loading && (
                         <MUI.Box mx={1} display="flex" alignItems="center" height="100%">
                             <MUI.Slider
-                                onChange={(e, v) => {
-                                    if (audioElement && typeof v === "number")
-                                        audioElement.fastSeek((audioElement.duration / 100) * v);
-                                }}
+                                onChange={changeCurrentTimeForTimeline(audioElement)}
                                 size="small"
                                 value={position}
                             />
                         </MUI.Box>
                     )}
                 </MUI.Box>
-                <TimeStamp
-                    time={endTime}
-                    loading={loading}
-                    show={showTimestamps}
-                />
+                <TimeStamp time={endTime} loading={loading} show={showTimestamps}/>
             </MUI.Stack>
 
             {!inline ? (
@@ -161,7 +155,6 @@ const AudioPlayer = (props: AudioPlayerProps) => {
                         display={display}
                         audioElement={audioElement}
                         playing={playing}
-                        setPlaying={setPlaying}
                         waveSurferRef={waveSurferRef}
                         playPauseIconButtonProps={playPauseIconButtonProps}
                     />
@@ -169,21 +162,25 @@ const AudioPlayer = (props: AudioPlayerProps) => {
             ) : null}
         </MUI.Stack>
     );
-};
+}
 
-const secondsToTimestring = (seconds: number) => {
-    const date = new Date();
-    date.setHours(0);
-    date.setMinutes(0);
-    date.setSeconds(seconds);
-    return date.toTimeString().slice(3, 8);
-};
+function changeCurrentTimeForTimeline(
+    audioElement: HTMLAudioElement | null
+): SliderUnstyledTypeMap["props"]["onChange"] {
+    return (e, v) => {
+        if (audioElement && typeof v === "number") {
+            const currentPosition = (audioElement.duration / 100) * v;
 
-function TimeStamp(props: {
-    time: string;
-    loading?: boolean;
-    show?: boolean;
-}) {
+            if (audioElement.fastSeek instanceof Function) {
+                audioElement.fastSeek(currentPosition);
+            } else {
+                audioElement.currentTime = currentPosition;
+            }
+        }
+    };
+}
+
+function TimeStamp(props: { time: string; loading?: boolean; show?: boolean }) {
     const {time, loading = false, show = true} = props;
 
     if (!show) {
@@ -191,15 +188,13 @@ function TimeStamp(props: {
     }
 
     return (
-        <MUI.Box
-            sx={containerStyle.timestamp}
-        >
+        <MUI.Box sx={containerStyle.timestamp}>
             <MUI.Typography>{loading ? "--:--" : time}</MUI.Typography>
         </MUI.Box>
     );
 }
 
-interface HandleMountArg {
+interface GetInitializeWaveSurferParams {
     src: string;
     waveSurferRef: React.MutableRefObject<WaveSurferRef>;
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -209,18 +204,20 @@ interface HandleMountArg {
     setPlaying: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function handleMount({
-                         src,
-                         waveSurferRef,
-                         setLoading,
-                         setCurrentTime,
-                         setEndTime,
-                         setProgress,
-                         setPlaying,
-                     }: HandleMountArg): WaveSurferProps["onMount"] {
-    return function onMount(waveSurfer) {
-        console.log("[AudioPlayer] on mount", waveSurfer);
+function getInitializeWaveSurfer(
+    params: GetInitializeWaveSurferParams
+): WaveSurferProps["onMount"] {
+    const {
+        src,
+        waveSurferRef,
+        setLoading,
+        setCurrentTime,
+        setEndTime,
+        setProgress,
+        setPlaying,
+    } = params;
 
+    return function initializeWaveSurfer(waveSurfer) {
         if (!waveSurfer) {
             return;
         }
@@ -228,35 +225,45 @@ function handleMount({
         waveSurferRef.current = waveSurfer;
 
         if (src) {
-            console.log("[AudioPlayer] load audio", src);
-            waveSurferRef.current.load(src);
+            waveSurfer.load(src);
         }
 
-        waveSurferRef.current.on("ready", () => {
-            console.log("[AudioPlayer] ready event");
-            setLoading(false);
+        const makePlaying = () => setPlaying(true);
+        const makeNotPlaying = () => setPlaying(false);
 
-            const duration = waveSurferRef.current.getDuration();
-            if (duration) {
-                setEndTime(secondsToTimestring(duration));
-            }
-        });
-
-        waveSurferRef.current.on("loading", (n: number) => {
-            console.log("[AudioPlayer] loading audio...", n);
+        waveSurfer.on("loading", (n: number) => {
             setProgress(n);
         });
-
-        ["finish", "error", "destroy", "pause"].forEach((e) =>
-            waveSurferRef.current.on(e, () => setPlaying(false))
+        waveSurfer.on("ready", () => {
+            setLoading(false);
+            setEndTime(secondsToTimestring(waveSurfer.getDuration()));
+        });
+        waveSurfer.on("play", makePlaying);
+        waveSurfer.on(
+            "audioprocess",
+            throttle((e: number) => {
+                setCurrentTime(secondsToTimestring(e));
+            }, 100)
         );
-
-        waveSurferRef.current.on("error", (e) => console.error(e));
-        waveSurferRef.current.on("playing", () => setPlaying(true));
-        waveSurferRef.current.on("audioprocess", (e: number) => {
-            setCurrentTime(secondsToTimestring(e));
+        waveSurfer.on("seek", () => {
+            setCurrentTime(secondsToTimestring(waveSurfer.getCurrentTime()));
+        });
+        ["finish", "destroy", "pause"].forEach((e) =>
+            waveSurfer.on(e, makeNotPlaying)
+        );
+        waveSurfer.on("error", (e) => {
+            makeNotPlaying();
+            console.error(e);
         });
     };
+}
+
+function secondsToTimestring(seconds: number) {
+    const date = new Date();
+    date.setHours(0);
+    date.setMinutes(0);
+    date.setSeconds(seconds);
+    return date.toTimeString().slice(3, 8);
 }
 
 interface InitializeForTimelineArgs {
@@ -289,18 +296,24 @@ function initializeForTimeline(args: InitializeForTimelineArgs) {
     const makePlaying = () => setPlaying(true);
     const makeNotPlaying = () => setPlaying(false);
 
-    audio.addEventListener("playing", makePlaying);
-    audio.addEventListener("pause", makeNotPlaying);
-    audio.addEventListener("ended", makeNotPlaying);
     audio.addEventListener("canplaythrough", () => {
         setLoading(false);
         setEndTime(secondsToTimestring(audio.duration));
     });
-    audio.addEventListener("timeupdate", () => {
-        setCurrentTime(secondsToTimestring(audio.currentTime));
-        setPosition((audio.currentTime / audio.duration) * 100);
+    audio.addEventListener("playing", makePlaying);
+    audio.addEventListener(
+        "timeupdate",
+        throttle(() => {
+            setCurrentTime(secondsToTimestring(audio.currentTime));
+            setPosition((audio.currentTime / audio.duration) * 100);
+        }, 100)
+    );
+    audio.addEventListener("pause", makeNotPlaying);
+    audio.addEventListener("ended", makeNotPlaying);
+    audio.addEventListener("error", (e) => {
+        makeNotPlaying();
+        console.error(e);
     });
-    audio.addEventListener("error", (e) => console.error(e));
 
     setAudioElement(audio);
 }
@@ -310,7 +323,6 @@ interface PlayPauseButtonProps
     disabled?: boolean;
     audioElement: HTMLAudioElement | null;
     playing: boolean;
-    setPlaying: React.Dispatch<React.SetStateAction<boolean>>;
     waveSurferRef: React.MutableRefObject<WaveSurferRef>;
 }
 
@@ -320,22 +332,30 @@ function PlayPauseButton(props: PlayPauseButtonProps) {
         display,
         audioElement,
         playing,
-        setPlaying,
         waveSurferRef,
         playPauseIconButtonProps,
     } = props;
 
-    const playOrPauseForTimeline = (
-        playing: PlayPauseButtonProps["playing"],
-        audioElement: PlayPauseButtonProps["audioElement"]
-    ) => {
-        playing ? audioElement?.pause() : audioElement?.play();
+    const handlePlay = () => {
+        if (display === "timeline" && audioElement) {
+            playOrPauseForTimeline(playing, audioElement);
+
+            return null;
+        }
+
+        playOrPauseForWaveForm(waveSurferRef);
     };
 
-    const playOrPauseForWaveForm = (
-        waveSurferRef: PlayPauseButtonProps["waveSurferRef"],
-        setPlaying: React.Dispatch<React.SetStateAction<boolean>>
-    ) => {
+    function playOrPauseForTimeline(
+        playing: PlayPauseButtonProps["playing"],
+        audioElement: PlayPauseButtonProps["audioElement"]
+    ) {
+        playing ? audioElement?.pause() : audioElement?.play();
+    }
+
+    function playOrPauseForWaveForm(
+        waveSurferRef: PlayPauseButtonProps["waveSurferRef"]
+    ) {
         const currentWaveSurfer = waveSurferRef.current;
 
         if (!currentWaveSurfer) return null;
@@ -346,19 +366,7 @@ function PlayPauseButton(props: PlayPauseButtonProps) {
         }
 
         currentWaveSurfer.play();
-
-        setPlaying(true);
-    };
-
-    const handlePlay = () => {
-        if (display === "timeline" && audioElement) {
-            playOrPauseForTimeline(playing, audioElement);
-
-            return null;
-        }
-
-        playOrPauseForWaveForm(waveSurferRef, setPlaying);
-    };
+    }
 
     return (
         <MUI.IconButton
@@ -372,8 +380,6 @@ function PlayPauseButton(props: PlayPauseButtonProps) {
         </MUI.IconButton>
     );
 }
-
-export default memo(AudioPlayer);
 
 const containerStyle = {
     timestamp: {
