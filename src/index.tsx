@@ -70,6 +70,11 @@ export default function AudioPlayer(props: AudioPlayerProps) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [src, display]);
 
+    useEffect(() => () => {
+        audioElement?.remove();
+        waveSurferRef.current?.destroy();
+    }, []);
+
     const theme = useTheme();
     const _waveColor = waveColor || theme.palette.primary.light;
     const progressColor = theme.palette.primary.main;
