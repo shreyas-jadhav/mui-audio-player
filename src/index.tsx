@@ -47,8 +47,8 @@ export default function AudioPlayer(props: AudioPlayerProps) {
     const [progress, setProgress] = useState(0);
     const [playing, setPlaying] = useState(false);
     const [position, setPosition] = useState(0);
-    const [currentTime, setCurrentTime] = useState(NaN);
-    const [endTime, setEndTime] = useState(NaN);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [endTime, setEndTime] = useState(0);
     const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(
         null
     );
