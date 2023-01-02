@@ -338,7 +338,7 @@ function PlayPauseButton(props: PlayPauseButtonProps) {
         audioElement,
         playing,
         waveSurferRef,
-        playPauseIconButtonProps,
+        playPauseIconButtonProps = {},
     } = props;
 
     const handlePlay = () => {
@@ -373,13 +373,16 @@ function PlayPauseButton(props: PlayPauseButtonProps) {
         currentWaveSurfer.play();
     }
 
+    const {sx: iconButtonSx, ...restIconButtonProps} = playPauseIconButtonProps;
+    const mergedSx = {...containerStyle.playButton, ...iconButtonSx};
+
     return (
         <IconButton
             disabled={disabled}
             color="primary"
             onClick={handlePlay}
-            sx={containerStyle.playButton}
-            {...playPauseIconButtonProps}
+            sx={mergedSx}
+            {...restIconButtonProps}
         >
             {playing ? <PauseIcon/> : <PlayArrowIcon/>}
         </IconButton>
