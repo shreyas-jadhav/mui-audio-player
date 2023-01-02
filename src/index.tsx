@@ -1,6 +1,6 @@
 import React, {useEffect, useState, useRef} from "react";
 import {WaveSurfer, WaveForm, useWavesurfer} from "wavesurfer-react";
-import * as MUI from "@mui/material";
+import {Palette, Theme, IconButtonProps, SxProps, useTheme, Paper, Stack, LinearProgress, Box, Slider, Typography, IconButton} from "@mui/material";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import {WaveSurferProps} from "wavesurfer-react/dist/containers/WaveSurfer";
@@ -18,11 +18,11 @@ interface AudioPlayerProps {
     display?: "waveform" | "timeline";
     inline?: boolean;
     paperize?: boolean;
-    waveColor?: keyof MUI.Palette | string;
+    waveColor?: keyof Palette | string;
     waveHeight?: number;
     showTimestamps?: boolean;
-    playPauseIconButtonProps?: MUI.IconButtonProps;
-    containerSx?: MUI.SxProps<MUI.Theme>;
+    playPauseIconButtonProps?: IconButtonProps;
+    containerSx?: SxProps<Theme>;
     containerHeight?: string | number;
     containerWidth?: string | number;
 }
@@ -70,7 +70,7 @@ export default function AudioPlayer(props: AudioPlayerProps) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [src, display]);
 
-    const theme = MUI.useTheme();
+    const theme = useTheme();
     const _waveColor = waveColor || theme.palette.primary.light;
     const progressColor = theme.palette.primary.main;
     const mergedContainerStyle = {
@@ -80,10 +80,10 @@ export default function AudioPlayer(props: AudioPlayerProps) {
     };
 
     return (
-        <MUI.Stack
+        <Stack
             sx={mergedContainerStyle}
             direction={inline ? "row" : "column"}
-            component={paperize ? MUI.Paper : "div"}
+            component={paperize ? Paper : "div"}
             alignItems="center"
         >
             {inline ? (
@@ -97,11 +97,11 @@ export default function AudioPlayer(props: AudioPlayerProps) {
                 />
             ) : null}
             {loading ? (
-                <MUI.LinearProgress variant="determinate" value={progress}/>
+                <LinearProgress variant="determinate" value={progress}/>
             ) : null}
 
-            <MUI.Stack
-                component={MUI.Box}
+            <Stack
+                component={Box}
                 direction="row"
                 flexGrow={loading ? 0 : 1}
                 height="100%"
@@ -110,7 +110,7 @@ export default function AudioPlayer(props: AudioPlayerProps) {
                 spacing={1}
             >
                 <TimeStamp time={currentTime} loading={loading} show={showTimestamps}/>
-                <MUI.Box flexGrow={1} height="100%" width="100%" alignItems="center">
+                <Box flexGrow={1} height="100%" width="100%" alignItems="center">
                     {display === "waveform" && (
                         <WaveSurfer
                             onMount={getInitializeWaveSurfer({
@@ -136,20 +136,20 @@ export default function AudioPlayer(props: AudioPlayerProps) {
                         </WaveSurfer>
                     )}
                     {display === "timeline" && !loading && (
-                        <MUI.Box mx={1} display="flex" alignItems="center" height="100%">
-                            <MUI.Slider
+                        <Box mx={1} display="flex" alignItems="center" height="100%">
+                            <Slider
                                 onChange={changeCurrentTimeForTimeline(audioElement)}
                                 size="small"
                                 value={position}
                             />
-                        </MUI.Box>
+                        </Box>
                     )}
-                </MUI.Box>
+                </Box>
                 <TimeStamp time={endTime} loading={loading} show={showTimestamps}/>
-            </MUI.Stack>
+            </Stack>
 
             {!inline ? (
-                <MUI.Box display="flex" justifyContent="center" alignItems="center">
+                <Box display="flex" justifyContent="center" alignItems="center">
                     <PlayPauseButton
                         disabled={loading}
                         display={display}
@@ -158,9 +158,9 @@ export default function AudioPlayer(props: AudioPlayerProps) {
                         waveSurferRef={waveSurferRef}
                         playPauseIconButtonProps={playPauseIconButtonProps}
                     />
-                </MUI.Box>
+                </Box>
             ) : null}
-        </MUI.Stack>
+        </Stack>
     );
 }
 
@@ -201,9 +201,9 @@ function TimeStamp(props: { time: number; loading?: boolean; show?: boolean }) {
     const timeStr = Number.isNaN(time) ? invalidTimeStr : toTimeString(time);
 
     return (
-        <MUI.Box sx={containerStyle.timestamp}>
-            <MUI.Typography>{loading ? defaultTimeStr : timeStr}</MUI.Typography>
-        </MUI.Box>
+        <Box sx={containerStyle.timestamp}>
+            <Typography>{loading ? defaultTimeStr : timeStr}</Typography>
+        </Box>
     );
 }
 
@@ -374,7 +374,7 @@ function PlayPauseButton(props: PlayPauseButtonProps) {
     }
 
     return (
-        <MUI.IconButton
+        <IconButton
             disabled={disabled}
             color="primary"
             onClick={handlePlay}
@@ -382,7 +382,7 @@ function PlayPauseButton(props: PlayPauseButtonProps) {
             {...playPauseIconButtonProps}
         >
             {playing ? <PauseIcon/> : <PlayArrowIcon/>}
-        </MUI.IconButton>
+        </IconButton>
     );
 }
 
