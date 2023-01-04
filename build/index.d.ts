@@ -1,5 +1,7 @@
 /// <reference types="react" />
-import { Palette, Theme, IconButtonProps, SxProps } from "@mui/material";
+import type { Palette, Theme, SxProps } from "@mui/material";
+import type { IconButtonProps } from "@mui/material/IconButton";
+import type { SliderUnstyledTypeMap } from "@mui/base/SliderUnstyled/SliderUnstyled.types";
 interface AudioPlayerProps {
     src: string;
     id?: string;
@@ -13,6 +15,8 @@ interface AudioPlayerProps {
     containerSx?: SxProps<Theme>;
     containerHeight?: string | number;
     containerWidth?: string | number;
+    inlineSliderProps?: SliderUnstyledTypeMap["props"];
+    size?: "small" | "medium" | "large";
 }
 export default function AudioPlayer(props: AudioPlayerProps): JSX.Element;
 export {};

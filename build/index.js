@@ -46,15 +46,22 @@ var __rest = (this && this.__rest) || function (s, e) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-define(["require", "exports", "react", "wavesurfer-react", "@mui/material", "@mui/icons-material/PlayArrow", "@mui/icons-material/Pause", "throttle-typescript"], function (require, exports, react_1, wavesurfer_react_1, material_1, PlayArrow_1, Pause_1, throttle_typescript_1) {
+define(["require", "exports", "react", "wavesurfer-react", "@mui/material/styles", "@mui/material/Paper", "@mui/material/Stack", "@mui/material/LinearProgress", "@mui/material/Box", "@mui/material/Slider", "@mui/material/Typography", "@mui/material/IconButton", "@mui/icons-material/PlayArrow", "@mui/icons-material/Pause", "throttle-typescript"], function (require, exports, react_1, wavesurfer_react_1, styles_1, Paper_1, Stack_1, LinearProgress_1, Box_1, Slider_1, Typography_1, IconButton_1, PlayArrow_1, Pause_1, throttle_typescript_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     react_1 = __importStar(react_1);
+    Paper_1 = __importDefault(Paper_1);
+    Stack_1 = __importDefault(Stack_1);
+    LinearProgress_1 = __importDefault(LinearProgress_1);
+    Box_1 = __importDefault(Box_1);
+    Slider_1 = __importDefault(Slider_1);
+    Typography_1 = __importDefault(Typography_1);
+    IconButton_1 = __importDefault(IconButton_1);
     PlayArrow_1 = __importDefault(PlayArrow_1);
     Pause_1 = __importDefault(Pause_1);
     var plugins = [];
     function AudioPlayer(props) {
-        var src = props.src, _a = props.id, id = _a === void 0 ? "waveform" : _a, _b = props.display, display = _b === void 0 ? "waveform" : _b, _c = props.inline, inline = _c === void 0 ? false : _c, _d = props.paperize, paperize = _d === void 0 ? true : _d, waveColor = props.waveColor, _e = props.waveHeight, waveHeight = _e === void 0 ? 48 : _e, _f = props.showTimestamps, showTimestamps = _f === void 0 ? true : _f, playPauseIconButtonProps = props.playPauseIconButtonProps, containerSx = props.containerSx, _g = props.containerHeight, containerHeight = _g === void 0 ? "auto" : _g, _h = props.containerWidth, containerWidth = _h === void 0 ? 250 : _h;
+        var src = props.src, _a = props.id, id = _a === void 0 ? "waveform" : _a, _b = props.display, display = _b === void 0 ? "waveform" : _b, _c = props.inline, inline = _c === void 0 ? false : _c, _d = props.paperize, paperize = _d === void 0 ? true : _d, waveColor = props.waveColor, _e = props.waveHeight, waveHeight = _e === void 0 ? 48 : _e, _f = props.showTimestamps, showTimestamps = _f === void 0 ? true : _f, playPauseIconButtonProps = props.playPauseIconButtonProps, containerSx = props.containerSx, _g = props.containerHeight, containerHeight = _g === void 0 ? "auto" : _g, _h = props.containerWidth, containerWidth = _h === void 0 ? 250 : _h, size = props.size;
         var _j = (0, react_1.useState)(true), loading = _j[0], setLoading = _j[1];
         var _k = (0, react_1.useState)(0), progress = _k[0], setProgress = _k[1];
         var _l = (0, react_1.useState)(false), playing = _l[0], setPlaying = _l[1];
@@ -83,16 +90,16 @@ define(["require", "exports", "react", "wavesurfer-react", "@mui/material", "@mu
             audioElement === null || audioElement === void 0 ? void 0 : audioElement.remove();
             (_a = waveSurferRef.current) === null || _a === void 0 ? void 0 : _a.destroy();
         }; }, []);
-        var theme = (0, material_1.useTheme)();
+        var theme = (0, styles_1.useTheme)();
         var _waveColor = waveColor || theme.palette.primary.light;
         var progressColor = theme.palette.primary.main;
         var mergedContainerStyle = __assign({ height: containerHeight, width: containerWidth }, (containerSx || {}));
-        return (react_1.default.createElement(material_1.Stack, { sx: mergedContainerStyle, direction: inline ? "row" : "column", component: paperize ? material_1.Paper : "div", alignItems: "center" },
-            inline ? (react_1.default.createElement(PlayPauseButton, { disabled: loading, display: display, audioElement: audioElement, playing: playing, waveSurferRef: waveSurferRef, playPauseIconButtonProps: playPauseIconButtonProps })) : null,
-            loading ? (react_1.default.createElement(material_1.LinearProgress, { variant: "determinate", value: progress })) : null,
-            react_1.default.createElement(material_1.Stack, { component: material_1.Box, direction: "row", flexGrow: loading ? 0 : 1, height: "100%", width: "100%", alignItems: "center", spacing: 1 },
+        return (react_1.default.createElement(Stack_1.default, { sx: mergedContainerStyle, direction: inline ? "row" : "column", component: paperize ? Paper_1.default : "div", alignItems: "center" },
+            inline ? (react_1.default.createElement(PlayPauseButton, { disabled: loading, display: display, audioElement: audioElement, playing: playing, waveSurferRef: waveSurferRef, playPauseIconButtonProps: __assign({ size: size }, playPauseIconButtonProps) })) : null,
+            loading ? (react_1.default.createElement(LinearProgress_1.default, { variant: "determinate", value: progress })) : null,
+            react_1.default.createElement(Stack_1.default, { component: Box_1.default, direction: "row", flexGrow: loading ? 0 : 1, height: "100%", width: "100%", alignItems: "center", spacing: 1 },
                 react_1.default.createElement(TimeStamp, { time: currentTime, loading: loading, show: showTimestamps }),
-                react_1.default.createElement(material_1.Box, { flexGrow: 1, height: "100%", width: "100%", alignItems: "center" },
+                react_1.default.createElement(Box_1.default, { flexGrow: 1, height: "100%", width: "100%", alignItems: "center" },
                     display === "waveform" && (react_1.default.createElement(wavesurfer_react_1.WaveSurfer, { onMount: getInitializeWaveSurfer({
                             src: src,
                             waveSurferRef: waveSurferRef,
@@ -103,10 +110,10 @@ define(["require", "exports", "react", "wavesurfer-react", "@mui/material", "@mu
                             setPlaying: setPlaying,
                         }), plugins: plugins },
                         react_1.default.createElement(wavesurfer_react_1.WaveForm, { id: id, fillParent: true, mediaControls: true, waveColor: _waveColor, progressColor: progressColor, height: waveHeight, hideScrollbar: false }))),
-                    display === "timeline" && !loading && (react_1.default.createElement(material_1.Box, { mx: 1, display: "flex", alignItems: "center", height: "100%" },
-                        react_1.default.createElement(material_1.Slider, { onChange: changeCurrentTimeForTimeline(audioElement), size: "small", value: position })))),
+                    display === "timeline" && !loading && (react_1.default.createElement(Box_1.default, { mx: 1, display: "flex", alignItems: "center", height: "100%" },
+                        react_1.default.createElement(Slider_1.default, { onChange: changeCurrentTimeForTimeline(audioElement), size: size === "large" ? "medium" : size !== null && size !== void 0 ? size : "small", value: position })))),
                 react_1.default.createElement(TimeStamp, { time: endTime, loading: loading, show: showTimestamps })),
-            !inline ? (react_1.default.createElement(material_1.Box, { display: "flex", justifyContent: "center", alignItems: "center" },
+            !inline ? (react_1.default.createElement(Box_1.default, { display: "flex", justifyContent: "center", alignItems: "center" },
                 react_1.default.createElement(PlayPauseButton, { disabled: loading, display: display, audioElement: audioElement, playing: playing, waveSurferRef: waveSurferRef, playPauseIconButtonProps: playPauseIconButtonProps }))) : null));
     }
     exports.default = AudioPlayer;
@@ -138,8 +145,8 @@ define(["require", "exports", "react", "wavesurfer-react", "@mui/material", "@mu
             return null;
         }
         var timeStr = Number.isNaN(time) ? invalidTimeStr : toTimeString(time);
-        return (react_1.default.createElement(material_1.Box, { sx: containerStyle.timestamp },
-            react_1.default.createElement(material_1.Typography, null, loading ? defaultTimeStr : timeStr)));
+        return (react_1.default.createElement(Box_1.default, { sx: containerStyle.timestamp },
+            react_1.default.createElement(Typography_1.default, null, loading ? defaultTimeStr : timeStr)));
     }
     function getInitializeWaveSurfer(params) {
         var src = params.src, waveSurferRef = params.waveSurferRef, setLoading = params.setLoading, setCurrentTime = params.setCurrentTime, setEndTime = params.setEndTime, setProgress = params.setProgress, setPlaying = params.setPlaying;
@@ -223,7 +230,7 @@ define(["require", "exports", "react", "wavesurfer-react", "@mui/material", "@mu
         }
         var iconButtonSx = playPauseIconButtonProps.sx, restIconButtonProps = __rest(playPauseIconButtonProps, ["sx"]);
         var mergedSx = __assign(__assign({}, containerStyle.playButton), iconButtonSx);
-        return (react_1.default.createElement(material_1.IconButton, __assign({ disabled: disabled, color: "primary", onClick: handlePlay, sx: mergedSx }, restIconButtonProps), playing ? react_1.default.createElement(Pause_1.default, null) : react_1.default.createElement(PlayArrow_1.default, null)));
+        return (react_1.default.createElement(IconButton_1.default, __assign({ disabled: disabled, color: "primary", onClick: handlePlay, sx: mergedSx }, restIconButtonProps), playing ? react_1.default.createElement(Pause_1.default, null) : react_1.default.createElement(PlayArrow_1.default, null)));
     }
     var containerStyle = {
         timestamp: {
