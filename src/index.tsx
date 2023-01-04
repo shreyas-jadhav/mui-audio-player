@@ -19,7 +19,7 @@ import PauseIcon from "@mui/icons-material/Pause";
 import { WaveSurferProps } from "wavesurfer-react/dist/containers/WaveSurfer";
 import { PluginType } from "wavesurfer-react/dist/types";
 import { throttle } from "throttle-typescript";
-import type { SliderUnstyledTypeMap } from "@mui/base/SliderUnstyled/SliderUnstyled.types";
+import type { SliderUnstyledTypeMap } from "@mui/base/SliderUnstyled";
 
 const plugins: PluginType[] = [];
 
