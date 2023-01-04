@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { WaveSurfer, WaveForm, useWavesurfer } from "wavesurfer-react";
 
-import type { Palette, Theme, SxProps } from "@mui/material";
+import type { Palette, Theme, SxProps, SliderProps } from "@mui/material";
 
 import type { IconButtonProps } from "@mui/material/IconButton";
 
@@ -19,7 +19,6 @@ import PauseIcon from "@mui/icons-material/Pause";
 import { WaveSurferProps } from "wavesurfer-react/dist/containers/WaveSurfer";
 import { PluginType } from "wavesurfer-react/dist/types";
 import { throttle } from "throttle-typescript";
-import type { SliderUnstyledTypeMap } from "@mui/base/SliderUnstyled";
 
 const plugins: PluginType[] = [];
 
@@ -39,7 +38,7 @@ interface AudioPlayerProps {
   containerHeight?: string | number;
   containerWidth?: string | number;
 
-  inlineSliderProps?: SliderUnstyledTypeMap["props"];
+  inlineSliderProps?: SliderProps;
   size?: "small" | "medium" | "large";
 }
 
@@ -193,7 +192,7 @@ export default function AudioPlayer(props: AudioPlayerProps) {
 
 function changeCurrentTimeForTimeline(
   audioElement: HTMLAudioElement | null
-): SliderUnstyledTypeMap["props"]["onChange"] {
+): SliderProps["onChange"] {
   return (e, v) => {
     if (audioElement && typeof v === "number") {
       const currentPosition = (audioElement.duration / 100) * v;
