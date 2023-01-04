@@ -9,8 +9,7 @@
     "watch": "tsc --watch",
     "build": "tsc",
     "dev": "npm run watch & npm run start:example",
-    "start:example": "cd example && npm start",
-    "postinstall": "tsc --outDir ./build"
+    "start:example": "cd example && npm start"
   },
   "repository": {
     "type": "git",
